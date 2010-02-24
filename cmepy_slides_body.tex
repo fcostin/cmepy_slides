@@ -1,0 +1,317 @@
+\documentclass[hyperref={colorlinks=true}]{beamer}
+
+\mode<presentation>
+{
+	\usetheme{Warsaw}
+	\setbeamercovered{transparent}
+}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+
+\usepackage{longtable}
+
+\usepackage{sphinx}
+
+\input{sphinx_header.tex}
+
+\input{header.tex}
+
+
+
+% font definitions, try \usepackage{ae} instead of the following
+% three lines if you don't like this look
+\usepackage{mathptmx}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
+
+\usepackage[T1]{fontenc}
+
+\title{CmePy}
+\subtitle{A Python package to solve the Chemical Master Equation}
+\author{Markus Hegland \& Reuben Fletcher-Costin}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{The Chemical Master Equation}
+\begin{block}{The Chemical Master Equation}
+\begin{itemize}
+\item Certain biochemical systems (e.g. gene regulatory networks) can be
+modelled as continuous-time discrete-state Markov processes.
+\item The evolution of the probability distribution for these processes can be
+described by the Chemical Master Equation (CME).
+\item The CME can be solved as an ODE, typically featuring large numbers of
+variables, to compute these probability distributions.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Overview of CmePy}
+\begin{block}{What is CmePy?}
+\begin{itemize}
+\item CmePy is a Python package to solve the Chemical Master Equation.
+\item CmePy is released as open source software, under the BSD license.
+\item CmePy employs SciPy's ODE solver and sparse matrix objects, NumPy's
+efficient multi-dimensional array objects, and Matplotlib's plotting routines:
+\end{itemize}
+\end{block}
+\begin{center}
+\includegraphics[height=0.1\textheight]{scipy-logo.png}
+\;
+\includegraphics[height=0.1\textheight]{numpy-logo.png}
+\;
+\includegraphics[height=0.1\textheight]{matplotlib-logo.png}
+\;
+\includegraphics[height=0.1\textheight]{python-logo.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example : an Enzymatic Reaction : Overview of System}
+\begin{block}{Enzymatic Reaction}
+The enzyme $E$ acts as a catalyst for the transformation of the substrate $S$
+into the product $P$, via the complex $C$:
+\begin{equation*}
+S + E \leftrightarrow{} C \rightarrow{} P + E \; .
+\end{equation*}
+
+System consists of three reactions:
+\begin{gather*}
+S + E \xrightarrow[]{k_1} C \; , \qquad{}
+C \xrightarrow[]{k_2} S + E \; , \qquad{}
+C \xrightarrow[]{k_3} P + E \; .
+\end{gather*} 
+
+Kinetic parameters: $k_1 = 0.01, k_2 = 35, k_3 = 30$.
+
+Initial species copy counts: $S_0 = 50, E_0 = 10, C_0 = 0, P_0 = 0$.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example : an Enzymatic Reaction : Modelling the System}
+\framesubtitle{Species Count Functions}
+\begin{block}{Defining the State Space}
+Let $[S] \in \mathbb{N}$ denote the species count of the species
+$S$ (similarly for $C, E, P$).
+
+Define the states in the state space by
+$(x_0, x_1) := ([S], [C]) \in \mathbb{N}^2$.
+\end{block}
+\begin{block}{Species Count Functions}
+All species counts can be expressed in terms of the state $(x_0, x_1)$:
+\begin{align*}
+[S](x_0, x_1) & := x_0 \; , \\
+[E](x_0, x_1) & := E_0 - x_1 \; , \\
+[C](x_0, x_1) & := x_1 \; , \\
+[P](x_0, x_1) & := S_0 - x_0 - x_1 \; .
+\end{align*}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Example : an Enzymatic Reaction : Modelling the System}
+\framesubtitle{Species Count Functions}
+\begin{block}{Species Count Functions in Python}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{s\PYGZus{}0} \PYG{o}{=} \PYG{l+m+mi}{50}
+\PYG{n}{e\PYGZus{}0} \PYG{o}{=} \PYG{l+m+mi}{10}
+
+\PYG{n}{s} \PYG{o}{=} \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{n}{x}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{e} \PYG{o}{=} \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{n}{e\PYGZus{}0} \PYG{o}{-} \PYG{n}{x}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+\PYG{n}{c} \PYG{o}{=} \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{n}{x}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+\PYG{n}{p} \PYG{o}{=} \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{n}{s\PYGZus{}0} \PYG{o}{-} \PYG{n}{x}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{-} \PYG{n}{x}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+\end{Verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Example : an Enzymatic Reaction : Modelling the System}
+\framesubtitle{Reaction Propensity Functions}
+\begin{block}{Reaction Propensity Functions}
+We can express the propensity functions $\nu_1, \nu_2, \nu_3$ of the
+three reactions as functions of the state $(x_0, x_1) \in \mathbb{N}^2$ :
+\begin{align*}
+\nu_1(x_0, x_1) := & 0.01 \cdot [S](x_0, x_1) \cdot [E](x_0, x_1) \; , \\
+\nu_2(x_0, x_1) := & 35 \cdot [C](x_0, x_1) \; ,\\
+\nu_3(x_0, x_1) := & 30 \cdot [C](x_0, x_1) \; .
+\end{align*}
+\end{block}
+\begin{block}{Reaction Propensity Functions in Python}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{propensities} \PYG{o}{=} \PYG{p}{(}
+    \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{l+m+mf}{0.01}\PYG{o}{*}\PYG{n}{s}\PYG{p}{(}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{o}{*}\PYG{n}{e}\PYG{p}{(}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{p}{,}
+    \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{l+m+mf}{35.0}\PYG{o}{*}\PYG{n}{c}\PYG{p}{(}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{p}{,}
+    \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{l+m+mf}{30.0}\PYG{o}{*}\PYG{n}{c}\PYG{p}{(}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{p}{,}
+\PYG{p}{)}
+\end{Verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Example : an Enzymatic Reaction : Modelling the System}
+\framesubtitle{Reaction State Transitions}
+\begin{block}{Reaction State Transitions}
+The first reaction $S + E \xrightarrow[]{} C$ reduces the copy counts of
+$S$ and $E$ by one, but increases the copy count of $C$ by one.
+In terms of $(x_0, x_1) = ([S], [C])$ coordinates, the corresponding transition
+is:
+\begin{equation*}
+(x_0, x_1) \mapsto (x_0 - 1, x_1 + 1) = (x_0, x_1) + (-1, 1)
+\end{equation*}
+The transitions for the second and third reactions are
+$(1, -1), (0, -1)$.
+\end{block}
+\begin{block}{Reaction State Transitions in Python}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{transitions} \PYG{o}{=} \PYG{p}{(}
+    \PYG{p}{(}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+    \PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+    \PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}
+\PYG{p}{)}
+\end{Verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Example : an Enzymatic Reaction : Modelling the System}
+\framesubtitle{The Complete Model}
+\begin{columns}[t]
+\column{0.45\textwidth}
+\begin{block}{First, Define Species Counts}
+\begin{Verbatim}[commandchars=\\\{\}, fontsize=\tiny]
+\PYG{n}{s\PYGZus{}0} \PYG{o}{=} \PYG{l+m+mi}{50}
+\PYG{n}{e\PYGZus{}0} \PYG{o}{=} \PYG{l+m+mi}{10}
+
+\PYG{n}{s} \PYG{o}{=} \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{n}{x}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{e} \PYG{o}{=} \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{n}{e\PYGZus{}0} \PYG{o}{-} \PYG{n}{x}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+\PYG{n}{c} \PYG{o}{=} \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{n}{x}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+\PYG{n}{p} \PYG{o}{=} \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{n}{s\PYGZus{}0} \PYG{o}{-} \PYG{n}{x}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{-} \PYG{n}{x}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+\end{Verbatim}
+\end{block}
+\begin{block}{Model Attributes}
+The \verb+shape+ attribute defines (exclusive) upper bounds on the
+$(x_0, x_1)$ coordinates, while the \verb+initial_state+ attribute specifies
+initial conditions for the CME.
+\end{block}
+\column{0.55\textwidth}
+\begin{block}{Second, Define Model}
+\begin{Verbatim}[commandchars=\\\{\}, fontsize=\tiny]
+\PYG{k+kn}{from} \PYG{n+nn}{cmepy} \PYG{k+kn}{import} \PYG{n}{model}
+
+\PYG{n}{m} \PYG{o}{=} \PYG{n}{model}\PYG{o}{.}\PYG{n}{create}\PYG{p}{(}
+    \PYG{n}{species\PYGZus{}counts} \PYG{o}{=} \PYG{p}{(}\PYG{n}{s}\PYG{p}{,} \PYG{n}{e}\PYG{p}{,} \PYG{n}{c}\PYG{p}{,} \PYG{n}{p}\PYG{p}{,} \PYG{p}{)}\PYG{p}{,}
+    \PYG{n}{propensities} \PYG{o}{=} \PYG{p}{(}
+        \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{l+m+mf}{0.01}\PYG{o}{*}\PYG{n}{s}\PYG{p}{(}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{o}{*}\PYG{n}{e}\PYG{p}{(}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{p}{,}
+        \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{l+m+mf}{35.0}\PYG{o}{*}\PYG{n}{c}\PYG{p}{(}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{p}{,}
+        \PYG{k}{lambda} \PYG{o}{*}\PYG{n}{x} \PYG{p}{:} \PYG{l+m+mf}{30.0}\PYG{o}{*}\PYG{n}{c}\PYG{p}{(}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{p}{,}
+    \PYG{p}{)}\PYG{p}{,}
+    \PYG{n}{transitions} \PYG{o}{=} \PYG{p}{(}
+        \PYG{p}{(}\PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+        \PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+        \PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{o}{-}\PYG{l+m+mi}{1}\PYG{p}{)}
+    \PYG{p}{)}\PYG{p}{,}
+    \PYG{n}{shape} \PYG{o}{=} \PYG{p}{(}\PYG{n}{s\PYGZus{}0} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n+nb}{min}\PYG{p}{(}\PYG{n}{s\PYGZus{}0}\PYG{p}{,} \PYG{n}{e\PYGZus{}0}\PYG{p}{)} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,}
+    \PYG{n}{initial\PYGZus{}state} \PYG{o}{=} \PYG{p}{(}\PYG{n}{s\PYGZus{}0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{p}{)}
+\end{Verbatim}
+\end{block}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Example : an Enzymatic Reaction : Solving the Model}
+\begin{block}{Solving the Enzymatic Reaction Model}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{numpy}
+\PYG{k+kn}{from} \PYG{n+nn}{cmepy} \PYG{k+kn}{import} \PYG{n}{solver}
+
+\PYG{n}{enzyme\PYGZus{}solver} \PYG{o}{=} \PYG{n}{solver}\PYG{o}{.}\PYG{n}{create}\PYG{p}{(}
+    \PYG{n}{model} \PYG{o}{=} \PYG{n}{m}\PYG{p}{,}
+    \PYG{n}{sink} \PYG{o}{=} \PYG{n+nb+bp}{False}
+\PYG{p}{)}
+
+\PYG{n}{time\PYGZus{}steps} \PYG{o}{=} \PYG{n}{numpy}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{10.0}\PYG{p}{,} \PYG{l+m+mi}{101}\PYG{p}{)}
+
+\PYG{k}{for} \PYG{n}{t} \PYG{o+ow}{in} \PYG{n}{time\PYGZus{}steps}\PYG{p}{:}
+    \PYG{n}{enzyme\PYGZus{}solver}\PYG{o}{.}\PYG{n}{step}\PYG{p}{(}\PYG{n}{t}\PYG{p}{)}
+\end{Verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Example : an Enzymatic Reaction : Results}
+\begin{block}{Computing and Displaying Results}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{from} \PYG{n+nn}{cmepy} \PYG{k+kn}{import} \PYG{n}{recorder}
+\PYG{n}{r} \PYG{o}{=} \PYG{n}{recorder}\PYG{o}{.}\PYG{n}{create}\PYG{p}{(}
+    \PYG{p}{(}\PYG{p}{[}\PYG{l+s}{'}\PYG{l+s}{S}\PYG{l+s}{'}\PYG{p}{,} \PYG{l+s}{'}\PYG{l+s}{E}\PYG{l+s}{'}\PYG{p}{,} \PYG{l+s}{'}\PYG{l+s}{C}\PYG{l+s}{'}\PYG{p}{,} \PYG{l+s}{'}\PYG{l+s}{P}\PYG{l+s}{'}\PYG{p}{]}\PYG{p}{,} \PYG{n}{m}\PYG{o}{.}\PYG{n}{species\PYGZus{}counts}\PYG{p}{)}
+\PYG{p}{)}
+
+\PYG{k}{for} \PYG{n}{t} \PYG{o+ow}{in} \PYG{n}{time\PYGZus{}steps}\PYG{p}{:}
+    \PYG{n}{enzyme\PYGZus{}solver}\PYG{o}{.}\PYG{n}{step}\PYG{p}{(}\PYG{n}{t}\PYG{p}{)}
+    \PYG{n}{r}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{t}\PYG{p}{,} \PYG{n}{enzyme\PYGZus{}solver}\PYG{o}{.}\PYG{n}{y}\PYG{p}{)}
+
+\PYG{n}{recorder}\PYG{o}{.}\PYG{n}{display\PYGZus{}plots}\PYG{p}{(}\PYG{n}{r}\PYG{p}{)}
+\end{Verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example : an Enzymatic Reaction : Results}
+\begin{block}{Expected Values of Species Counts}
+\begin{center}
+\includegraphics[height=0.75\textheight]{results_ev.png}
+\end{center}
+\end{block}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Example : an Enzymatic Reaction : Results}
+\begin{block}{Expected Values of Species Counts}
+\begin{center}
+\includegraphics[height=0.75\textheight]{results_std_dev.png}
+\end{center}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Summary of CmePy Features}
+\begin{block}{CmePy Features}
+\begin{itemize}
+\item models can be defined using species or reaction counts
+\item both dense `rectangular' and sparse state spaces are supported
+\item error due to state space truncation may be tracked with an FSP-style
+`sink' state
+\item separable time-dependent reaction propensities are supported
+\item common statistical results (expected values, standard deviation,
+joint and marginal distributions, covariance) are easily obtained
+\item documentation!
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{CmePy Links}
+\begin{block}{CmePy Links}
+\begin{itemize}
+\item Check out the code at CmePy's GitHub repository:
+\begin{center}
+\href{http://github.com/fcostin/cmepy/}{http://github.com/fcostin/cmepy/}
+\end{center} 
+\item Online documentation, including a number of extensive examples,
+is available at:
+\begin{center}
+\href{http://fcostin.github.com/cmepy/}{http://fcostin.github.com/cmepy/}
+\end{center}
+\end{itemize}
+\end{block}
+\end{frame}
+\end{document}

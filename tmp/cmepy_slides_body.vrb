@@ -1,0 +1,15 @@
+\frametitle {Example : an Enzymatic Reaction : Results}
+\begin{block}{Computing and Displaying Results}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{from} \PYG{n+nn}{cmepy} \PYG{k+kn}{import} \PYG{n}{recorder}
+\PYG{n}{r} \PYG{o}{=} \PYG{n}{recorder}\PYG{o}{.}\PYG{n}{create}\PYG{p}{(}
+    \PYG{p}{(}\PYG{p}{[}\PYG{l+s}{'}\PYG{l+s}{S}\PYG{l+s}{'}\PYG{p}{,} \PYG{l+s}{'}\PYG{l+s}{E}\PYG{l+s}{'}\PYG{p}{,} \PYG{l+s}{'}\PYG{l+s}{C}\PYG{l+s}{'}\PYG{p}{,} \PYG{l+s}{'}\PYG{l+s}{P}\PYG{l+s}{'}\PYG{p}{]}\PYG{p}{,} \PYG{n}{m}\PYG{o}{.}\PYG{n}{species\PYGZus{}counts}\PYG{p}{)}
+\PYG{p}{)}
+
+\PYG{k}{for} \PYG{n}{t} \PYG{o+ow}{in} \PYG{n}{time\PYGZus{}steps}\PYG{p}{:}
+    \PYG{n}{enzyme\PYGZus{}solver}\PYG{o}{.}\PYG{n}{step}\PYG{p}{(}\PYG{n}{t}\PYG{p}{)}
+    \PYG{n}{r}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{t}\PYG{p}{,} \PYG{n}{enzyme\PYGZus{}solver}\PYG{o}{.}\PYG{n}{y}\PYG{p}{)}
+
+\PYG{n}{recorder}\PYG{o}{.}\PYG{n}{display\PYGZus{}plots}\PYG{p}{(}\PYG{n}{r}\PYG{p}{)}
+\end{Verbatim}
+\end{block}

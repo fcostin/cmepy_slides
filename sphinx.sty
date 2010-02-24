@@ -1,0 +1,101 @@
+%
+% sphinx.sty
+%
+% Adapted from the old python.sty, mostly written by Fred Drake,
+% by Georg Brandl.
+%
+% horribly butchered by r fletcher-costin to adapt the code formatting
+% to work inside beamer
+
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{sphinx}[2008/05/01 LaTeX package (Sphinx markup)]
+
+% \RequirePackage{textcomp}
+% \RequirePackage{fancyhdr}
+\RequirePackage{fancybox}
+% \RequirePackage{titlesec}
+% \RequirePackage{tabulary}
+\RequirePackage{amsmath} % for \text
+% \RequirePackage{makeidx}
+\RequirePackage{framed}
+\RequirePackage{color}
+% For highlighted code.
+\RequirePackage{fancyvrb}
+
+% Redefine these colors to your liking in the preamble.
+\definecolor{TitleColor}{rgb}{0.126,0.263,0.361}
+\definecolor{InnerLinkColor}{rgb}{0.208,0.374,0.486}
+\definecolor{OuterLinkColor}{rgb}{0.216,0.439,0.388}
+% Redefine these colors to something not white if you want to have colored
+% background and border for code examples.
+\definecolor{VerbatimColor}{rgb}{1,1,1}
+\definecolor{VerbatimBorderColor}{rgb}{0,0,0}
+
+% Uncomment these two lines to ignore the paper size and make the page 
+% size more like a typical published manual.
+%\renewcommand{\paperheight}{9in}
+%\renewcommand{\paperwidth}{8.5in}   % typical squarish manual
+%\renewcommand{\paperwidth}{7in}     % O'Reilly ``Programmming Python''
+
+% for PDF output, use colors and maximal compression
+\newif\ifsphinxpdfoutput\sphinxpdfoutputfalse
+\ifx\pdfoutput\undefined\else\ifcase\pdfoutput
+  \let\py@NormalColor\relax
+  \let\py@TitleColor\relax
+\else
+  \sphinxpdfoutputtrue
+  \input{pdfcolor}
+  \def\py@NormalColor{\color[rgb]{0.0,0.0,0.0}}
+  \def\py@TitleColor{\color{TitleColor}}
+  \pdfcompresslevel=9
+\fi\fi
+
+\newcommand{\strong}[1]{{\bf #1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\bfcode}[1]{\code{\bfseries#1}}
+\newcommand{\samp}[1]{`\code{#1}'}
+\newcommand{\email}[1]{\textsf{#1}}
+
+% Redefine the Verbatim environment to allow border and background colors.
+% The original environment is still used for verbatims within tables.
+\let\OriginalVerbatim=\Verbatim
+\let\endOriginalVerbatim=\endVerbatim
+
+% Play with vspace to be able to keep the indentation.
+\newlength\distancetoright
+\newlength\leftsidespace
+\def\mycolorbox#1{%
+  \setlength\leftsidespace{\@totalleftmargin}%
+  \setlength\distancetoright{0.9\textwidth}%
+  \advance\distancetoright -\@totalleftmargin %
+  \noindent\hspace*{\@totalleftmargin}%
+  \fcolorbox{VerbatimBorderColor}{VerbatimColor}{%
+  \begin{minipage}{\distancetoright}%
+    \smallskip%
+    \noindent\hspace*{-\leftsidespace}%
+    #1
+  \end{minipage}%
+  }%
+}
+\def\FrameCommand{\mycolorbox}
+
+\renewcommand{\Verbatim}[1][1]{%
+  % The list environement is needed to control perfectly the vertical
+  % space.
+  \list{}{%
+  \setlength\parskip{0pt}%
+  \setlength\itemsep{0ex}%
+  \setlength\topsep{0ex}%
+  \setlength\partopsep{0pt}%
+  \setlength\leftmargin{0pt}%
+  \setlength\rightmargin{0pt}%
+  }%
+  \item\MakeFramed {\FrameRestore}%
+     \small%
+    \OriginalVerbatim[#1]%
+}
+\renewcommand{\endVerbatim}{%
+    \endOriginalVerbatim%
+  \endMakeFramed%
+  \endlist%
+}

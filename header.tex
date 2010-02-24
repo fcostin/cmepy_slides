@@ -1,0 +1,157 @@
+% Ams stuff, nice equations and fonts ...
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amstext}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{amsthm}
+% yeah commutative diagrams
+\usepackage{amscd}
+
+% Basic graphics for including postscript files
+\usepackage{graphics}
+\usepackage{epsfig}
+
+% Some more useful packages
+\usepackage{verbatim}
+% \usepackage{moreverb}
+
+
+% Shows labels, useful during writing stage
+%\usepackage{showkeys}
+
+
+%\pagestyle{headings}
+
+%------------------------------------
+
+% other things i have found useful
+\usepackage{url}
+\usepackage{mathrsfs}
+
+\usepackage{listings}
+
+%---- homegrown latex macros ---------------
+\renewcommand{\natural}{\mathbb{N}}
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\complex}{\mathbb{C}}
+\newcommand{\integer}{\mathbb{Z}}
+\DeclareMathOperator{\D}{D}
+\newcommand{\gradient}{\nabla}
+\newcommand{\laplacian}{\Delta}
+\newcommand{\boundary}{\partial}
+\DeclareMathOperator{\diam}{diam}
+\newcommand{\definedby}{\mathrel{\mathop:}=}
+\DeclareMathOperator{\dist}{dist}
+\DeclareMathOperator{\support}{supp}
+\DeclareMathOperator{\image}{im}
+\DeclareMathOperator{\trace}{tr}
+\newcommand{\union}{\cup}
+\newcommand{\intersection}{\cap}
+\DeclareMathOperator{\diag}{diag}
+\newcommand{\powerset}{\mathcal{P}}
+\DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator{\graph}{graph}
+\DeclareMathOperator{\linspan}{span}
+\DeclareMathOperator{\esssup}{{ess sup}}
+\DeclareMathOperator{\divergence}{div}
+
+\newcommand{\floor}[1]
+{
+	\ensuremath
+	{
+		\left\lfloor {#1} \right\rfloor
+	}
+}
+
+\newcommand{\species}[1]
+{
+	\ensuremath
+	{
+		\textrm{{#1}}
+	}
+}
+
+\newcommand{\dna}
+{
+	\species{DNA}
+}
+
+\newcommand{\rna}
+{
+	\species{mRNA}
+}
+
+\newcommand{\protein}
+{
+	\species{P}
+}
+
+\newcommand{\virus}
+{
+	\species{V}
+}
+
+\newcommand{\nullspecies}
+{
+	\ensuremath{
+		\emptyset{}
+	}
+}
+
+
+\newcommand{\moment}[1]
+{
+	\ensuremath{
+		\mu^{\prime}_{#1}
+	}
+}
+
+\newcommand{\mmnt}
+{
+	\ensuremath{
+		\Gamma
+	}
+}
+
+\newcommand{\expectation}
+{
+	\ensuremath{
+		{\mathbf{E}\;}
+	}
+}
+
+\newcommand{\mmntexpectation}
+{
+	\ensuremath{
+		{\mathbf{E}_{\Gamma}\;}
+	}
+}
+
+\newcommand{\variance}
+{
+	\ensuremath{
+		{\mathbf{Var}\;}
+	}
+}
+
+\newcommand{\mmntvariance}
+{
+	\ensuremath{
+		{\mathbf{Var}_{\Gamma}\;}
+	}
+}
+
+\newcommand{\shift}
+{
+	\ensuremath{
+		{\mathbf{Shift}\;}
+	}
+}
+
+\newcommand{\mmntshift}
+{
+	\ensuremath{
+		{\mathbf{Shift}_{\Gamma}\;}
+	}
+}

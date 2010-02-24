@@ -1,0 +1,13 @@
+#TeXlipse project settings
+#Wed Feb 24 16:19:36 EST 2010
+builderNum=2
+outputDir=
+makeIndSty=
+bibrefDir=
+outputFormat=pdf
+tempDir=tmp
+mainTexFile=cmepy_slides_body.tex
+outputFile=cmepy_slides_body.pdf
+langSpell=en
+markDer=true
+srcDir=
