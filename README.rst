@@ -7,6 +7,6 @@ Some latex / beamer slides introducing the `CmePy
 Slides are `here
 <http://github.com/fcostin/cmepy_slides/raw/master/cmepy_slides_body.pdf>`_
 
-The Python code formatting used in this slides is achiaved via a horribly
+The Python code formatting used in this slides is achieved via a horribly
 modified version of latex source generated from the wonderful
 `sphinx <http://sphinx.pocoo.org/>`_.
