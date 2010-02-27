@@ -38,7 +38,6 @@ def main():
 
     time_steps = numpy.linspace(0.0, 10.0, 101)
 
-    from cmepy import recorder
     r = recorder.create(
         (['S', 'E', 'C', 'P'], m.species_counts)
     )
